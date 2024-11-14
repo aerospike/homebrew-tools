@@ -1,6 +1,6 @@
 class Aerolab < Formula
   desc ""
-  homepage "https://github.com/robertglonek/homebrew-tools"
+  homepage "https://github.com/aerospike/homebrew-tools"
   version "7.6.3"
 
   on_macos do
