@@ -1,4 +1,4 @@
-class Aerolab < Formula
+class AerolabAT764 < Formula
   desc ""
   homepage "https://github.com/aerospike/homebrew-tools"
   version "7.6.4"
