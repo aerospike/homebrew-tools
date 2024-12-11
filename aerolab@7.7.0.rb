@@ -6,7 +6,7 @@ class AerolabAT770 < Formula
   on_macos do
     if Hardware::CPU.intel?
       url "https://github.com/aerospike/aerolab/releases/download/7.7.0/aerolab-macos-amd64-7.7.0.zip"
-      sha256 "7122a34513c5ebae99856928345e5b68b64d2f2444c6a8f484e650b5920a8e6d"
+      sha256 "797571c3bcb4eea207e0e2bd0e315039802fae92bd34446500422623799d0f2e"
 
       def install
         bin.install "aerolab"
@@ -14,7 +14,7 @@ class AerolabAT770 < Formula
     end
     if Hardware::CPU.arm?
       url "https://github.com/aerospike/aerolab/releases/download/7.7.0/aerolab-macos-arm64-7.7.0.zip"
-      sha256 "b547cb5c1b8bf95347c41606b48d2b7f715f1f3b20427e9c0a5abc632618da0b"
+      sha256 "f1ae0ce4dc239d3cb05f9d9265a2b5a1351b0b059d1be2c7451942df030ccf39"
 
       def install
         bin.install "aerolab"
@@ -25,7 +25,7 @@ class AerolabAT770 < Formula
   on_linux do
     if Hardware::CPU.intel?
       url "https://github.com/aerospike/aerolab/releases/download/7.7.0/aerolab-linux-amd64-7.7.0.zip"
-      sha256 "d731bee186e3a14a8f4191cddcd363289cfaae0c1fa7069f6e91670e1f50637c"
+      sha256 "c52717d428e65102bd05edf38ba2bf0f8b7a40592853643f0b8ecc71573da015"
 
       def install
         bin.install "aerolab"
@@ -33,7 +33,7 @@ class AerolabAT770 < Formula
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
       url "https://github.com/aerospike/aerolab/releases/download/7.7.0/aerolab-linux-arm64-7.7.0.zip"
-      sha256 "a5f4c980c41a146aeab0f7a43ad3001f2f941cba2c0eac37d36df721a73ab2ec"
+      sha256 "a65789bead80308e556cd6fae5d1201ceec24d18e0b7a70741b94add3476cd3b"
 
       def install
         bin.install "aerolab"
