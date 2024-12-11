@@ -1,0 +1,59 @@
+name: Aerolab - new version - auto trigger
+
+on:
+  repository_dispatch:
+    types: aerolab
+
+jobs:
+    release:
+      runs-on: macos-13
+      steps:
+            - name: "Git checkout"
+              uses: actions/checkout@v3
+            - name: "Get files from aerolab"
+              env:
+                  version: ${{ github.event.client_payload.version }}
+              run: |
+                mkdir /tmp/binaries
+                pushd /tmp/binaries
+                wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-linux-amd64-${version}.zip
+                wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-linux-arm64-${version}.zip
+                wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-macos-amd64-${version}.zip
+                wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-macos-arm64-${version}.zip
+                popd
+            - name: "Create rb files"
+              env:
+                  version: ${{ github.event.client_payload.version }}
+                  isLatest: ${{ github.event.client_payload.isLatest }}
+              run: |
+                cp aerolab-template aerolab@${version}.rb
+                sed -i.bak "s/AVERSION/${version}/g" aerolab@${version}.rb
+                nsum=$(shasum -a 256 /tmp/binaries/aerolab-macos-amd64-${version}.zip| awk '{print $1}')
+                sed -i.bak "s/MACOSAMD/${nsum}/g" aerolab@${version}.rb
+                nsum=$(shasum -a 256 /tmp/binaries/aerolab-macos-arm64-${version}.zip| awk '{print $1}')
+                sed -i.bak "s/MACOSARM/${nsum}/g" aerolab@${version}.rb
+                nsum=$(shasum -a 256 /tmp/binaries/aerolab-linux-amd64-${version}.zip| awk '{print $1}')
+                sed -i.bak "s/LINUXAMD/${nsum}/g" aerolab@${version}.rb
+                nsum=$(shasum -a 256 /tmp/binaries/aerolab-linux-arm64-${version}.zip| awk '{print $1}')
+                sed -i.bak "s/LINUXARM/${nsum}/g" aerolab@${version}.rb
+                if [ "${isLatest}" = "true" ]
+                then
+                  cp aerolab@${version}.rb aerolab.rb
+                  sed -i.bak 's/ACLASS/Aerolab/g' aerolab.rb
+                fi
+                vernodot=${version//./}
+                sed -i.bak "s/ACLASS/AerolabAT${vernodot}/g" aerolab@${version}.rb
+            - name: Configure Git
+              run: |
+                git config --global user.name "github-actions[bot]"
+                git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            - name: Commit and Push changes
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                version: ${{ github.event.client_payload.version }}
+                isLatest: ${{ github.event.client_payload.isLatest }}
+              run: |
+                git add aerolab@${version}.rb
+                [ "${isLatest}" = "true" ] && git add aerolab.rb
+                git commit -m "Release aerolab ${version}"
+                git push origin HEAD:${{ github.ref_name }}
