@@ -17,6 +17,10 @@ jobs:
       steps:
             - name: "Git checkout"
               uses: actions/checkout@v3
+            - name: Configure Git
+              run: |
+                git config --global user.name "github-actions[bot]"
+                git config --global user.email "github-actions[bot]@users.noreply.github.com"
             - name: "Get files from aerolab"
               env:
                   version: ${{ inputs.version }}
@@ -57,10 +61,6 @@ jobs:
                 fi
                 vernodot=${version//./}
                 sed -i.bak "s/ACLASS/AerolabAT${vernodot}/g" aerolab@${version}.rb
-            - name: Configure Git
-              run: |
-                git config --global user.name "github-actions[bot]"
-                git config --global user.email "github-actions[bot]@users.noreply.github.com"
             - name: Commit and Push changes
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,4 +72,4 @@ jobs:
                 git commit -m "Release aerolab ${version}"
                 git push -u origin aerolab
                 gh pr create -f
-                gh pr merge --admin -d
+                gh pr merge --admin -d $(gh pr list --json number -s open |jq '.[].number') -m
