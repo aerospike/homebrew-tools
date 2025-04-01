@@ -28,6 +28,13 @@ jobs:
                 wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-macos-amd64-${version}.zip
                 wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-macos-arm64-${version}.zip
                 popd
+            - name: Create new local branch
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                version: ${{ inputs.version }}
+                isLatest: ${{ inputs.isLatest }}
+              run: |
+                git checkout -b aerolab
             - name: "Create rb files"
               env:
                   version: ${{ inputs.version }}
@@ -60,10 +67,9 @@ jobs:
                 version: ${{ inputs.version }}
                 isLatest: ${{ inputs.isLatest }}
               run: |
-                git checkout -b aerolab
                 git add aerolab@${version}.rb
                 [ "${isLatest}" = "true" ] && git add aerolab.rb
                 git commit -m "Release aerolab ${version}"
-                git push origin HEAD:${{ github.ref_name }}
+                git push -u origin aerolab
                 gh pr create -f
                 gh pr merge --admin -d
