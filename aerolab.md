@@ -43,9 +43,24 @@ v7.6.3-f46a025
 
 ## Downgrading / Upgrading to specific versions
 
+Install latest version:
+
+```
+% brew update
+
+% brew install aerospike/tools/aerolab
+
+% brew unlink aerolab && brew link --overwrite aerolab
+
+% aerolab version
+v7.6.3-f46a025
+```
+
 Install older version:
 
 ```
+% brew update
+
 % brew install aerospike/tools/aerolab@7.6.2
 
 % brew unlink aerolab@7.6.2 && brew link --overwrite aerolab@7.6.2
@@ -57,20 +72,11 @@ v7.6.2-e548431
 Install newer version:
 
 ```
+% brew update
+
 % brew install aerospike/tools/aerolab@7.6.3
 
 % brew unlink aerolab@7.6.3 && brew link --overwrite aerolab@7.6.3
-
-% aerolab version
-v7.6.3-f46a025
-```
-
-Install latest version:
-
-```
-% brew install aerospike/tools/aerolab
-
-% brew unlink aerolab && brew link --overwrite aerolab
 
 % aerolab version
 v7.6.3-f46a025
