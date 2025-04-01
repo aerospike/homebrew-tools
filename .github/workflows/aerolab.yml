@@ -17,6 +17,10 @@ jobs:
       steps:
             - name: "Git checkout"
               uses: actions/checkout@v3
+            - name: Configure Git
+              run: |
+                git config --global user.name "github-actions[bot]"
+                git config --global user.email "github-actions[bot]@users.noreply.github.com"
             - name: "Get files from aerolab"
               env:
                   version: ${{ inputs.version }}
@@ -28,6 +32,13 @@ jobs:
                 wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-macos-amd64-${version}.zip
                 wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-macos-arm64-${version}.zip
                 popd
+            - name: Create new local branch
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                version: ${{ inputs.version }}
+                isLatest: ${{ inputs.isLatest }}
+              run: |
+                git checkout -b aerolab
             - name: "Create rb files"
               env:
                   version: ${{ inputs.version }}
@@ -50,10 +61,6 @@ jobs:
                 fi
                 vernodot=${version//./}
                 sed -i.bak "s/ACLASS/AerolabAT${vernodot}/g" aerolab@${version}.rb
-            - name: Configure Git
-              run: |
-                git config --global user.name "github-actions[bot]"
-                git config --global user.email "github-actions[bot]@users.noreply.github.com"
             - name: Commit and Push changes
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -63,4 +70,6 @@ jobs:
                 git add aerolab@${version}.rb
                 [ "${isLatest}" = "true" ] && git add aerolab.rb
                 git commit -m "Release aerolab ${version}"
-                git push origin HEAD:${{ github.ref_name }}
+                git push -u origin aerolab
+                gh pr create -f
+                gh pr merge --admin -d $(gh pr list --json number -s open |jq '.[].number') -m
