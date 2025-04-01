@@ -60,7 +60,10 @@ jobs:
                 version: ${{ inputs.version }}
                 isLatest: ${{ inputs.isLatest }}
               run: |
+                git checkout -b aerolab
                 git add aerolab@${version}.rb
                 [ "${isLatest}" = "true" ] && git add aerolab.rb
                 git commit -m "Release aerolab ${version}"
                 git push origin HEAD:${{ github.ref_name }}
+                gh pr create -f
+                gh pr merge --admin -d
