@@ -1,6 +1,6 @@
 class AsvecAT320 < Formula
   desc ""
-  homepage "https://github.com/dwelch-spike/homebrew-tools"
+  homepage "https://github.com/aerospike/homebrew-tools"
   version "3.2.0"
 
   on_macos do

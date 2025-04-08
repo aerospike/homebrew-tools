@@ -1,6 +1,6 @@
 class ACLASS < Formula
   desc ""
-  homepage "https://github.com/dwelch-spike/homebrew-tools"
+  homepage "https://github.com/aerospike/homebrew-tools"
   version "AVERSION"
 
   on_macos do
