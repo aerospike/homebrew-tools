@@ -1,4 +1,4 @@
-class Asvec < Formula
+class AsvecAT320 < Formula
   desc ""
   homepage "https://github.com/dwelch-spike/homebrew-tools"
   version "3.2.0"
