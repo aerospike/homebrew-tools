@@ -1,0 +1,66 @@
+name: Asvec - new version - auto trigger
+
+on:
+  repository_dispatch:
+    types: asvec
+
+jobs:
+    release:
+      runs-on: macos-13
+      steps:
+            - name: "Git checkout"
+              uses: actions/checkout@v3
+            - name: Configure Git
+              run: |
+                git config --global user.name "github-actions[bot]"
+                git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            - name: "Get files from asvec"
+              env:
+                  version: ${{ github.event.client_payload.version }}
+              run: |
+                mkdir /tmp/binaries
+                pushd /tmp/binaries
+                wget -q https://github.com/aerospike/asvec/releases/download/v${version}/asvec-linux-amd64-${version}.zip
+                wget -q https://github.com/aerospike/asvec/releases/download/v${version}/asvec-linux-arm64-${version}.zip
+                wget -q https://github.com/aerospike/asvec/releases/download/v${version}/asvec-macos-amd64-${version}.zip
+                wget -q https://github.com/aerospike/asvec/releases/download/v${version}/asvec-macos-arm64-${version}.zip
+                popd
+            - name: Create new local branch
+              run: |
+                git checkout -b asvec
+            - name: "Create rb files"
+              env:
+                  version: ${{ github.event.client_payload.version }}
+                  isLatest: ${{ github.event.client_payload.isLatest }}
+              run: |
+                cp templates/asvec/asvec-template Formula/asvec/asvec@${version}.rb
+                cd Formula/asvec
+                sed -i.bak "s/AVERSION/${version}/g" asvec@${version}.rb
+                nsum=$(shasum -a 256 /tmp/binaries/asvec-macos-amd64-${version}.zip| awk '{print $1}')
+                sed -i.bak "s/MACOSAMD/${nsum}/g" asvec@${version}.rb
+                nsum=$(shasum -a 256 /tmp/binaries/asvec-macos-arm64-${version}.zip| awk '{print $1}')
+                sed -i.bak "s/MACOSARM/${nsum}/g" asvec@${version}.rb
+                nsum=$(shasum -a 256 /tmp/binaries/asvec-linux-amd64-${version}.zip| awk '{print $1}')
+                sed -i.bak "s/LINUXAMD/${nsum}/g" asvec@${version}.rb
+                nsum=$(shasum -a 256 /tmp/binaries/asvec-linux-arm64-${version}.zip| awk '{print $1}')
+                sed -i.bak "s/LINUXARM/${nsum}/g" asvec@${version}.rb
+                if [ "${isLatest}" = "true" ]
+                then
+                  cp asvec@${version}.rb asvec.rb
+                  sed -i.bak 's/ACLASS/Asvec/g' asvec.rb
+                fi
+                vernodot=${version//./}
+                sed -i.bak "s/ACLASS/AsvecAT${vernodot}/g" asvec@${version}.rb
+                cd ../..
+            - name: Commit and Push changes
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                version: ${{ github.event.client_payload.version }}
+                isLatest: ${{ github.event.client_payload.isLatest }}
+              run: |
+                git add Formula/asvec/asvec@${version}.rb
+                [ "${isLatest}" = "true" ] && git add Formula/asvec/asvec.rb
+                git commit -m "Release asvec ${version}"
+                git push -u origin asvec
+                gh pr create -f
+                gh pr merge --admin -d $(gh pr list --json number,headRefName -s open |jq '.[] | select(.headRefName == "asvec") | .number') -m
