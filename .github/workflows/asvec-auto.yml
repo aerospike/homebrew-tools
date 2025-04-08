@@ -20,10 +20,10 @@ jobs:
               run: |
                 mkdir /tmp/binaries
                 pushd /tmp/binaries
-                wget -q https://github.com/aerospike/asvec/releases/download/${version}/asvec-linux-amd64-${version}.zip
-                wget -q https://github.com/aerospike/asvec/releases/download/${version}/asvec-linux-arm64-${version}.zip
-                wget -q https://github.com/aerospike/asvec/releases/download/${version}/asvec-macos-amd64-${version}.zip
-                wget -q https://github.com/aerospike/asvec/releases/download/${version}/asvec-macos-arm64-${version}.zip
+                wget -q https://github.com/aerospike/asvec/releases/download/v${version}/asvec-linux-amd64-${version}.zip
+                wget -q https://github.com/aerospike/asvec/releases/download/v${version}/asvec-linux-arm64-${version}.zip
+                wget -q https://github.com/aerospike/asvec/releases/download/v${version}/asvec-macos-amd64-${version}.zip
+                wget -q https://github.com/aerospike/asvec/releases/download/v${version}/asvec-macos-arm64-${version}.zip
                 popd
             - name: Create new local branch
               run: |
