@@ -33,10 +33,6 @@ jobs:
                 wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-macos-arm64-${version}.zip
                 popd
             - name: Create new local branch
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                version: ${{ inputs.version }}
-                isLatest: ${{ inputs.isLatest }}
               run: |
                 git checkout -b aerolab
             - name: "Create rb files"
@@ -44,7 +40,8 @@ jobs:
                   version: ${{ inputs.version }}
                   isLatest: ${{ inputs.isLatest }}
               run: |
-                cp aerolab-template aerolab@${version}.rb
+                cp templates/aerolab/aerolab-template Formula/aerolab/aerolab@${version}.rb
+                cd Formula/aerolab
                 sed -i.bak "s/AVERSION/${version}/g" aerolab@${version}.rb
                 nsum=$(shasum -a 256 /tmp/binaries/aerolab-macos-amd64-${version}.zip| awk '{print $1}')
                 sed -i.bak "s/MACOSAMD/${nsum}/g" aerolab@${version}.rb
@@ -61,15 +58,16 @@ jobs:
                 fi
                 vernodot=${version//./}
                 sed -i.bak "s/ACLASS/AerolabAT${vernodot}/g" aerolab@${version}.rb
+                cd ../..
             - name: Commit and Push changes
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 version: ${{ inputs.version }}
                 isLatest: ${{ inputs.isLatest }}
               run: |
-                git add aerolab@${version}.rb
-                [ "${isLatest}" = "true" ] && git add aerolab.rb
+                git add Formula/aerolab/aerolab@${version}.rb
+                [ "${isLatest}" = "true" ] && git add Formula/aerolab/aerolab.rb
                 git commit -m "Release aerolab ${version}"
                 git push -u origin aerolab
                 gh pr create -f
-                gh pr merge --admin -d $(gh pr list --json number -s open |jq '.[].number') -m
+                gh pr merge --admin -d $(gh pr list --json number,headRefName -s open |jq '.[] | select(.headRefName == "aerolab") | .number') -m
