@@ -1,4 +1,4 @@
-class Asvec < Formula
+class AsvecAT330 < Formula
   desc ""
   homepage "https://github.com/aerospike/homebrew-tools"
   version "3.3.0"
