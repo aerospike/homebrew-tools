@@ -1,4 +1,4 @@
-name: Aerolab - new version
+name: Aerolab - manual run new version
 
 on:
     workflow_dispatch:
