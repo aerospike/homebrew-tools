@@ -27,7 +27,7 @@ jobs:
             - name: "Get files from aerolab"
               env:
                   version: ${{ inputs.version }}
-                  phash: ${{ input.prereleaseHash }}
+                  phash: ${{ inputs.prereleaseHash }}
               run: |
                 mkdir /tmp/binaries
                 pushd /tmp/binaries
