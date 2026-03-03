@@ -10,6 +10,9 @@ on:
             version:
                 description: "Version (ex: 7.6.3)"
                 required: true
+            prereleaseHash:
+                description: "If adding a prerelease, provide the version hash as it appears in the releases page"
+                required: false
 
 jobs:
     release:
@@ -24,13 +27,15 @@ jobs:
             - name: "Get files from aerolab"
               env:
                   version: ${{ inputs.version }}
+                  phash: ${{ input.prereleaseHash }}
               run: |
                 mkdir /tmp/binaries
                 pushd /tmp/binaries
-                wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-linux-amd64-${version}.zip
-                wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-linux-arm64-${version}.zip
-                wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-macos-amd64-${version}.zip
-                wget -q https://github.com/aerospike/aerolab/releases/download/${version}/aerolab-macos-arm64-${version}.zip
+                if [ "$phash" != "" ]; then phash="-$phash"; fi
+                wget -q https://github.com/aerospike/aerolab/releases/download/${version}${phash}/aerolab-linux-amd64-${version}.zip
+                wget -q https://github.com/aerospike/aerolab/releases/download/${version}${phash}/aerolab-linux-arm64-${version}.zip
+                wget -q https://github.com/aerospike/aerolab/releases/download/${version}${phash}/aerolab-macos-amd64-${version}.zip
+                wget -q https://github.com/aerospike/aerolab/releases/download/${version}${phash}/aerolab-macos-arm64-${version}.zip
                 popd
             - name: Create new local branch
               run: |
