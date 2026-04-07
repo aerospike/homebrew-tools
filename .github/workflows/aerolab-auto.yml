@@ -35,6 +35,7 @@ jobs:
               run: |
                 cp templates/aerolab/aerolab-template Formula/aerolab/aerolab@${version}.rb
                 cd Formula/aerolab
+                sed -i.bak "s/ATAG/${version}/g" aerolab@${version}.rb
                 sed -i.bak "s/AVERSION/${version}/g" aerolab@${version}.rb
                 nsum=$(shasum -a 256 /tmp/binaries/aerolab-macos-amd64-${version}.zip| awk '{print $1}')
                 sed -i.bak "s/MACOSAMD/${nsum}/g" aerolab@${version}.rb

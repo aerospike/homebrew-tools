@@ -44,9 +44,13 @@ jobs:
               env:
                   version: ${{ inputs.version }}
                   isLatest: ${{ inputs.isLatest }}
+                  phash: ${{ inputs.prereleaseHash }}
               run: |
                 cp templates/aerolab/aerolab-template Formula/aerolab/aerolab@${version}.rb
                 cd Formula/aerolab
+                tag="${version}"
+                if [ "$phash" != "" ]; then tag="${version}-${phash}"; fi
+                sed -i.bak "s/ATAG/${tag}/g" aerolab@${version}.rb
                 sed -i.bak "s/AVERSION/${version}/g" aerolab@${version}.rb
                 nsum=$(shasum -a 256 /tmp/binaries/aerolab-macos-amd64-${version}.zip| awk '{print $1}')
                 sed -i.bak "s/MACOSAMD/${nsum}/g" aerolab@${version}.rb
