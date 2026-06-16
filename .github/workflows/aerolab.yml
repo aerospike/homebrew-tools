@@ -18,8 +18,13 @@ jobs:
     release:
       runs-on: macos-14
       steps:
+            - name: Harden the runner (Audit all outbound calls)
+              uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+              with:
+                egress-policy: audit
+
             - name: "Git checkout"
-              uses: actions/checkout@v3
+              uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
             - name: Configure Git
               run: |
                 git config --global user.name "github-actions[bot]"
